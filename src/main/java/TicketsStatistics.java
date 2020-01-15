@@ -34,9 +34,8 @@ public class TicketsStatistics {
                     percentile = p;
                 }
             }
-        }
-        else if (args.length == 1) {
-            int p = Integer.parseInt(args[2]);
+        } else if (args.length == 1) {
+            int p = Integer.parseInt(args[0]);
             if (p > 0 && p <= 100) {
                 percentile = p;
             }
@@ -77,9 +76,7 @@ public class TicketsStatistics {
     }
 
     public Duration getFlightTimePercentileBetweenCities(int percentile, String departureCity, String arrivalCity) {
-
-        List<Ticket> ticketsByFlightTime = tickets.stream().filter(t -> t.getOriginName().equals(departureCity)).filter(t -> t.getDestinationName().equals(arrivalCity)).distinct().collect(Collectors.toList());
-        ticketsByFlightTime.sort((o1, o2) -> (int) (calculateFlightTime(o1).toMinutes() - calculateFlightTime(o2).toMinutes()));
+        List<Ticket> ticketsByFlightTime = tickets.stream().filter(t -> t.getOriginName().equals(departureCity)).filter(t -> t.getDestinationName().equals(arrivalCity)).distinct().sorted((o1, o2) -> (int) (calculateFlightTime(o1).toMinutes() - calculateFlightTime(o2).toMinutes())).collect(Collectors.toList());
         double koef = (double) percentile / 100 * ticketsByFlightTime.size();
         int index = (int) Math.ceil(koef) - 1;
 
