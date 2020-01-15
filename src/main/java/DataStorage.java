@@ -2,14 +2,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
 
-public class Data {
+public class DataStorage {
     @JsonProperty("tickets")
     private List<Ticket> tickets;
 
-    public Data() {
+    public DataStorage() {
     }
 
-    public Data(List<Ticket> tickets) {
+    public DataStorage(List<Ticket> tickets) {
         this.tickets = tickets;
     }
 
