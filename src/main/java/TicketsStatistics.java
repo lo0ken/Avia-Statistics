@@ -35,6 +35,12 @@ public class TicketsStatistics {
                 }
             }
         }
+        else if (args.length == 1) {
+            int p = Integer.parseInt(args[2]);
+            if (p > 0 && p <= 100) {
+                percentile = p;
+            }
+        }
 
         System.out.println(String.format("Departure city: %s, Arrival city: %s, Percentile: %d" + System.lineSeparator(),
                 departureCity, arrivalCity, percentile));
