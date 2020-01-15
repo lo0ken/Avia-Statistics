@@ -72,6 +72,9 @@ public class TicketsStatistics {
                 k++;
             }
         }
+        if (k == 0) {
+            throw new IllegalArgumentException("Cities not found!");
+        }
         return average.dividedBy(k);
     }
 
