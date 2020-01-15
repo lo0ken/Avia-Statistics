@@ -20,18 +20,42 @@ public class TicketsStatistics {
     }
 
     public static void main(String[] args) throws IOException {
+        String departureCity = "Владивосток";
+        String arrivalCity = "Тель-Авив";
+        int percentile = 90;
+
+        if (args.length >= 2) {
+            departureCity = args[0];
+            arrivalCity = args[1];
+
+            if (args.length == 3) {
+                int p = Integer.parseInt(args[2]);
+                if (p > 0 && p <= 100) {
+                    percentile = p;
+                }
+            }
+        }
+
+        System.out.println(String.format("Departure city: %s, Arrival city: %s, Percentile: %d" + System.lineSeparator(),
+                departureCity, arrivalCity, percentile));
+
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
         DataStorage dataStorage = mapper.readValue(new File("tickets.json"), DataStorage.class);
-        dataStorage.getTickets().forEach(System.out::println);
 
         TicketsStatistics ticketsStatistics = new TicketsStatistics(dataStorage);
-        long minutes = ticketsStatistics.getAverageTimeBetweenCities("Владивосток", "Тель-Авив").toMinutes();
-        System.out.println(String.format("Average duration between Владивосток and Тель-Авив: %dh %dm",
-                minutes / 60, minutes % 60));
 
-        long percentileTime = ticketsStatistics.getFlightTimePercentileBetweenCities(90, "Владивосток", "Тель-Авив").toMinutes();
-        System.out.println(String.format("%d percentil of flight time between Владивосток and Тель-Авив: %dh %dm", 90, percentileTime / 60, percentileTime % 60));
+        long averageMinutes = ticketsStatistics.
+                getAverageTimeBetweenCities(departureCity, arrivalCity)
+                .toMinutes();
+        System.out.println(String.format("Average duration between %s and %s: %dh %dm",
+                departureCity, arrivalCity, averageMinutes / 60, averageMinutes % 60));
+
+        long percentileMinutes = ticketsStatistics
+                .getFlightTimePercentileBetweenCities(percentile, departureCity, arrivalCity)
+                .toMinutes();
+        System.out.println(String.format("%d percentil of flight time between %s and %s: %dh %dm",
+                percentile, departureCity, arrivalCity, percentileMinutes / 60, percentileMinutes % 60));
     }
 
     public Duration getAverageTimeBetweenCities(String departureCity, String arrivalCity) {
@@ -39,7 +63,6 @@ public class TicketsStatistics {
         int k = 0;
         for (Ticket t : tickets) {
             if (t.getOriginName().equals(departureCity) && t.getDestinationName().equals(arrivalCity)) {
-                System.out.println(calculateFlightTime(t).toMinutes());
                 average = average.plus(calculateFlightTime(t));
                 k++;
             }
